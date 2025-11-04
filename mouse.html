@@ -1,0 +1,20 @@
+<html>
+<body>
+<center>
+<h2>Mouse Over Event</h2>
+<h4 id="text">Dont touch me!!</h4>
+<img id="img" src="bomb.jpeg" alt="img" width="250" onmouseover="myfun()" onmouseout="myfun1()">
+</center><script>
+  function myfun()
+   {
+    document.getElementById("text").innerHTML="booom...";
+    document.getElementById("img").src="blast.jpeg";
+   }
+   function myfun1()
+   {
+    document.getElementById("text").innerHTML="Dont touch me!!";
+    document.getElementById("img").src="bomb.jpeg";
+   }
+</script>
+</body>
+</html>
