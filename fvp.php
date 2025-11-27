@@ -1,147 +1,127 @@
 <?php
-$name = $email = $password = $confirm_password = $dob = "";
-$nameErr = $emailErr = $passwordErr = $confirmPasswordErr = $dobErr = "";
-$successMsg = "";
+
+
+$name = $email = $password = $confirm_password = $phone = "";
+$errors = [];
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-   
-    if (empty($_POST["name"])) {
-        $nameErr = "Name is required";
-    } else {
-        $name = test_input($_POST["name"]);
-    
-        if (!preg_match("/^[a-zA-Z ]*$/", $name)) {
-            $nameErr = "Only letters and white space allowed";
-        }
-    }
 
-    
-        if (empty($_POST["email"])) {
-        $emailErr = "Email is required";
-    } else {
-        $email = test_input($_POST["email"]);
-  
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $emailErr = "Invalid email format";
-        }
-    }
 
-    
-    if (empty($_POST["password"])) {
-        $passwordErr = "Password is required";
-    } else {
-        $password = test_input($_POST["password"]);
-    
-        if (strlen($password) < 6) {
-            $passwordErr = "Password must be at least 6 characters long";
-        }
-    }
+function clean_input($data) {
+    return htmlspecialchars(stripslashes(trim($data)));
+}
 
-    
-    if (empty($_POST["confirm_password"])) {
-        $confirmPasswordErr = "Please confirm your password";
-    } else {
-        $confirm_password = test_input($_POST["confirm_password"]);
-       
-        if ($confirm_password !== $password) {
-            $confirmPasswordErr = "Passwords do not match";
-        }
-    }
 
-    if (empty($_POST["dob"])) {
-        $dobErr = "Date of Birth is required";
-    } else {
-        $dob = test_input($_POST["dob"]);
-       
-        $dobDate = DateTime::createFromFormat('Y-m-d', $dob);
-        if (!$dobDate || $dobDate->format('Y-m-d') !== $dob) {
-            $dobErr = "Invalid Date format. Please use YYYY-MM-DD";
-        }
-    }
-
-    
-    if (empty($nameErr) && empty($emailErr) && empty($passwordErr) && empty($confirmPasswordErr) && empty($dobErr)) {
-     
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-        $successMsg = "Registration successful! Your password has been securely stored.";
+if (empty($_POST["name"])) {
+    $errors['name'] = "Name is required<br>";
+} else {
+    $name = clean_input($_POST["name"]);
+    if (!preg_match("/^[a-zA-Z ]*$/", $name)) {
+        $errors['name'] = "Only letters and spaces allowed<br>";
     }
 }
 
-function test_input($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
+
+if (empty($_POST["email"])) {
+    $errors['email'] = "Email is required<br>";
+} else {
+    $email = clean_input($_POST["email"]);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = "Invalid email format<br>";
+    }
+}
+
+
+
+
+
+
+if (empty($_POST["password"])) {
+    $errors['password'] = "Password is required<br>";
+} else {
+    $password = clean_input($_POST["password"]);
+    if (strlen($password) < 6) {
+        $errors['password'] = "Password must be at least 6 characters<br>";
+    }
+}
+
+
+if (empty($_POST["confirm_password"])) {
+    $errors['confirm_password'] = "Confirm your password<br>";
+} else {
+    $confirm_password = clean_input($_POST["confirm_password"]);
+    if ($confirm_password !== $password) {
+        $errors['confirm_password'] = "Passwords do not match<br>";
+    }
+}
+if (empty($_POST["phone"])) {
+    $errors['phone'] = "Phone number is required<br>";
+} else {
+    $phone = clean_input($_POST["phone"]);
+    if (!preg_match("/^[0-9]{10,15}$/", $phone)) {
+        $errors['phone'] = "Phone must be 10–15 digits<br>";
+    }
+}
+
+
+if (empty($errors)) {
+    echo "<h1 style='color:green; text-align:center;'>Registration Successful!</h1>";
+}
+
+
 }
 ?>
-
 <html>
 <head>
-   
-    <title>Registration Form</title>
-    <style>
-        .error {color: red;}
-        .success {color: green;}
-        form {
-            width: 300px;
-            margin: auto;
-        }
-        input[type="text"], input[type="email"], input[type="password"], input[type="date"] {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-        }
-        input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: orange;
-        }
-    </style>
+<title>PHP Registration Form</title>
+<style>
+.error { color: red; }
+form { width: 350px; margin: auto; }
+input { width: 100%; margin: 11px 0; padding: 7px; }
+</style>
 </head>
 <body>
 
-<h2 style="text-align: center;">Registration Form</h2>
 
-<?php
+<h2 style="text-align:center; color:blue";>Registration Form</h2>
 
-if (!empty($successMsg)) {
-    echo "<p class='success' style='text-align: center;'>$successMsg</p>";
-}
-?>
 
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-    <label for="name">Full Name:</label>
-    <input type="text" id="name" name="name" value="<?php echo $name;?>">
-    <span class="error"><?php echo $nameErr;?></span><br>
+<form method="POST" action="">
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" value="<?php echo $email;?>">
-    <span class="error"><?php echo $emailErr;?></span><br>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" value="<?php echo $password;?>">
-    <span class="error"><?php echo $passwordErr;?></span><br>
+<label style="color:brown";>Name:</label>
+<input type="text" name="name" value="<?= $name ?>">
+<span class="error"><?= $errors['name'] ?? '' ?></span>
 
-    <label for="confirm_password">Confirm Password:</label>
-    <input type="password" id="confirm_password" name="confirm_password" value="<?php echo $confirm_password;?>">
-    <span class="error"><?php echo $confirmPasswordErr;?></span><br>
 
-    <label for="dob">Date of Birth:</label>
-    <input type="date" id="dob" name="dob" value="<?php echo $dob;?>">
-    <span class="error"><?php echo $dobErr;?></span><br>
+<label style="color:brown";>Email:</label>
+<input type="text" name="email" value="<?= $email ?>">
+<span class="error"><?= $errors['email'] ?? '' ?></span>
 
-    <input type="submit" value="Register">
+
+<label style="color:brown";>Phone:</label>
+<input type="text" name="phone" value="<?= $phone ?>">
+<span class="error"><?= $errors['phone'] ?? '' ?></span>
+
+
+<label style="color:brown";>Password:</label>
+<input type="password" name="password">
+<span class="error"><?= $errors['password'] ?? '' ?></span>
+
+
+<label style="color:brown";>Confirm Password:</label>
+<input type="password" name="confirm_password">
+<span class="error"><?= $errors['confirm_password'] ?? '' ?></span>
+
+
+
+
+
+<br><br>
+<input type="submit" value="Register" style="background-color:pink";>
+
+
 </form>
 </body>
 </html>
-
-
-
